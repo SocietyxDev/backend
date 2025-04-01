@@ -2,36 +2,49 @@ import sharp from 'sharp';
 
 export default async (req, res) => {
   try {
-    // Get the image buffer safely
-    let buffer = Buffer.alloc(0);
+    // Get image buffer
+    const chunks = [];
     for await (const chunk of req) {
-      buffer = Buffer.concat([buffer, chunk]);
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+
+    // Validate image
+    if (!buffer || buffer.length < 100) {
+      return res.status(400).json({ error: "Invalid image file" });
     }
 
-    if (buffer.length === 0) {
-      return res.status(400).json({ error: "No image provided" });
-    }
-
-    // Simple Ghibli effect (more reliable version)
+    // Real Ghibli effect pipeline
     const processed = await sharp(buffer)
+      .ensureAlpha()  // Add transparency if missing
+      .linear(1.1, -(0.05 * 255)) // Boost contrast
       .modulate({
         brightness: 1.1,
-        saturation: 1.6
+        saturation: 1.8,
+        hue: 15
       })
-      .toFormat('jpeg')
+      .recomb([
+        [0.8, 0.2, 0],   // Boost reds
+        [0.1, 1.1, -0.2], // Supercharge greens
+        [0, 0.2, 0.8]     // Reduce blues
+      ])
+      .blur(0.4)
+      .sharpen({ sigma: 0.8 })
+      .png({ quality: 90 })
       .toBuffer();
 
+    res.setHeader('Content-Type', 'application/json');
     res.status(200).json({
-      url: `data:image/jpeg;base64,${processed.toString('base64')}`
+      url: `data:image/png;base64,${processed.toString('base64')}`
     });
 
   } catch (error) {
-    console.error('Conversion Error:', {
+    console.error('PROCESSING ERROR:', {
       message: error.message,
       stack: error.stack
     });
     res.status(500).json({ 
-      error: "Conversion failed",
+      error: "Image processing failed",
       details: error.message 
     });
   }
