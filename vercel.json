@@ -1,9 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.py", "use": "@vercel/python" }
-  ],
-  "routes": [
-    { "src": "/convert", "dest": "index.py" }
-  ]
+  "builds": [{ "src": "api/convert.js", "use": "@vercel/node" }],
+  "routes": [{ "src": "/api/convert", "dest": "api/convert.js" }]
 }
