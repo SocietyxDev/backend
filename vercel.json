@@ -5,14 +5,18 @@
       "src": "api/convert.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["node_modules/sharp/**"]
+        "maxLambdaSize": "50mb",
+        "includeFiles": [
+          "node_modules/sharp/**/*",
+          "node_modules/color/**/*"
+        ]
       }
     }
   ],
   "routes": [
     {
       "src": "/api/convert",
-      "dest": "api/convert.js",
+      "dest": "/api/convert.js",
       "methods": ["POST"]
     }
   ]
