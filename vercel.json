@@ -1,5 +1,19 @@
 {
   "version": 2,
-  "builds": [{ "src": "api/convert.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/api/convert", "dest": "api/convert.js" }]
+  "builds": [
+    {
+      "src": "api/convert.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["node_modules/sharp/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/convert",
+      "dest": "api/convert.js",
+      "methods": ["POST"]
+    }
+  ]
 }
