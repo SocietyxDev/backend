@@ -5,9 +5,11 @@ import sharp from 'sharp';
 const app = express();
 const upload = multer();
 
-// Enable CORS for your frontend
+// Critical CORS settings for your frontend
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
@@ -21,7 +23,8 @@ app.post('/api/convert', upload.single('image'), async (req, res) => {
       url: `data:image/jpeg;base64,${processed.toString('base64')}` 
     });
   } catch (error) {
-    res.status(500).json({ error: "Conversion failed" });
+    console.error('Error:', error);
+    res.status(500).json({ error: "Server error during conversion" });
   }
 });
 
