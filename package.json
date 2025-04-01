@@ -6,8 +6,7 @@
     "node": "18.x"
   },
   "dependencies": {
-    "sharp": "0.33.2",
-    "@vercel/node": "^4.1.7"
+    "sharp": "0.33.2"
   },
   "scripts": {
     "postinstall": "npm rebuild sharp --build-from-source"
