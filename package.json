@@ -6,10 +6,10 @@
     "node": "18.x"
   },
   "dependencies": {
-    "@vercel/node": "^4.1.7",
-    "sharp": "^0.33.2"
+    "sharp": "0.33.2",
+    "@vercel/node": "^4.1.7"
   },
   "scripts": {
-    "start": "node api/convert.js"
+    "postinstall": "npm rebuild sharp --build-from-source"
   }
 }
