@@ -1,32 +1,51 @@
+import express from 'express';
+import multer from 'multer';
 import sharp from 'sharp';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-export default async (req, res) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const app = express();
+const upload = multer();
+
+// Enable CORS
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  next();
+});
+
+app.post('/api/convert', upload.single('image'), async (req, res) => {
   try {
-    // Get the uploaded image
-    const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(chunk);
+    if (!req.file) {
+      return res.status(400).json({ error: "No image uploaded" });
     }
-    const buffer = Buffer.concat(chunks);
 
-    // REAL Ghibli-style transformations
-    const processed = await sharp(buffer)
+    // Process with Sharp
+    const processed = await sharp(req.file.buffer)
       .modulate({
         brightness: 1.15,
-        saturation: 1.5,  // More vibrant colors
-        hue: 15           // Warm tone shift
+        saturation: 1.5,
+        hue: 15
       })
-      .blur(0.3)          // Soft dreamy effect
-      .normalise()         // Auto-contrast
+      .blur(0.3)
+      .normalise()
       .toFormat('jpeg')
       .toBuffer();
 
-    res.status(200).json({
+    res.json({
       url: `data:image/jpeg;base64,${processed.toString('base64')}`
     });
 
   } catch (error) {
-    console.error('Conversion error:', error);
-    res.status(500).json({ error: "Failed to process image" });
+    console.error('Error processing image:', error);
+    res.status(500).json({ 
+      error: "Failed to process image",
+      details: error.message 
+    });
   }
-};
+});
+
+export default app;
