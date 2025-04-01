@@ -5,11 +5,7 @@
       "src": "api/convert.js",
       "use": "@vercel/node",
       "config": {
-        "maxLambdaSize": "50mb",
-        "includeFiles": [
-          "node_modules/sharp/**/*",
-          "node_modules/color/**/*"
-        ]
+        "includeFiles": ["node_modules/**/*"]
       }
     }
   ],
